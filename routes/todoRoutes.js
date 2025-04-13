@@ -1,10 +1,17 @@
-const express = require("express")
-const {createTodo, deleteList,markAndUnMark, allList,getOneList, editToDo} = require("../controllers/todoListCotroller")
+const express = require("express");
+const {
+  createTodo,
+  allList,
+  getOneList,
+  editToDo,
+  deleteList,
+  markAndUnMark
+} = require("../controllers/todoListCotroller");
 
-const todoRouter = express.Router()
+const todoRouter = express.Router();
 
-todoRouter.route("/").post(createTodo).get(allList)
-todoRouter.route("/:id").get(getOneList).patch(editToDo).delete(deleteList)
-todoRouter.route("/mark/:id").patch(markAndUnMark)
+todoRouter.route("/").post(createTodo).get(allList);
+todoRouter.route("/:id").get(getOneList).patch(editToDo).delete(deleteList);
+todoRouter.route("/mark/:id").patch(markAndUnMark);
 
-module.exports = todoRouter
+module.exports = todoRouter;

@@ -1,17 +1,26 @@
 const express = require("express");
 const connectDb = require("./connectDb");
 require("dotenv").config();
-const cors = require("cors")
-const todoRouter = require("./routes/todoRoutes")
+const cors = require("cors");
+const todoRouter = require("./routes/todoRoutes");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+
+app.use(express.json());
+app.use(cors());
+
+
+app.use("/todo", todoRouter);
+
+
+app.use((req, res, next) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 
 
-app.use(express.json())
-app.use(cors())
-app.use("/todo",todoRouter)
 
 const startServer = async () => {
   try {
@@ -19,12 +28,12 @@ const startServer = async () => {
     console.log("Connected to MongoDB");
 
     app.listen(PORT, () => {
-      console.log(`App is listening on port ${PORT}`);
+      console.log(` Server running on http://localhost:${PORT}`);
     });
-
   } catch (error) {
-    console.log(`Error: ${error.message}`);
+    console.error(" Failed to connect to MongoDB:", error.message);
+    process.exit(1); // 
   }
 };
 
-startServer(); // ⬅️ Start the app
+startServer();

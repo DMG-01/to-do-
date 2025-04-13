@@ -1,103 +1,97 @@
-const todoList = require("../models")
-const statusCodes = require("http-status-codes")
+const todoList = require("../models");
+const statusCodes = require("http-status-codes");
 
 const createTodo = async (req, res) => {
-    try {
-      const { task } = req.body;
-  
-      if (!task) {
-        return res
-          .status(statusCodes.BAD_REQUEST)
-          .json({ msg: "No required property found" });
-      }
-  
-      const newToDo = await todoList.create({ task });
-      return res
-        .status(statusCodes.CREATED)
-        .json({ msg: "New to-do list created", toDo: newToDo });
-    } catch (error) {
-      return res
-        .status(statusCodes.INTERNAL_SERVER_ERROR)
-        .json({ msg: "An error occurred" });
+  try {
+    const { task } = req.body;
+
+    if (!task) {
+      return res.status(statusCodes.BAD_REQUEST).json({ msg: "Task is required" });
     }
-  };
-  
 
-const editToDo = async(req,res)=> {
-    try {
-
-        const {newList} = req.body
-
-        if(!newList) {
-            return res.status(statusCodes.BAD_REQUEST).json({msg:`missing required parameter`})
-        }
-
-        const list = await todoList.findOne({_id : req.params.id})
-
-        if(!list) {
-            return res.status(statusCodes.NOT_FOUND).json({msg:`to do list of id ${req.params.id}`})
-        }
-        list.toDo = newList
-        await list.save()
-    }catch(error) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`an error occured`})
-    }
-}
-
-
-const markAndUnMark = async(req,res)=> {
-    try {
-  const list = await todoList.findOne({_id: req.params.id})
-
-  if(!list) {
-    return res.status(statusCodes.NOT_FOUND).json({msg:`not found`})
+    const newTodo = await todoList.create({ task });
+    return res.status(statusCodes.CREATED).json({ msg: "Todo created", todo: newTodo });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
   }
+};
 
-  list.checked = !list.checked
- await list.save()
+const allList = async (req, res) => {
+  try {
+    const todos = await todoList.find();
+    return res.status(statusCodes.OK).json({ todos });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+  }
+};
 
-
- return res.status(statusCodes.OK).json({list})
-    }catch(error) {
-        console.log(error)
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`an error occured`, error})
+const getOneList = async (req, res) => {
+  try {
+    const todo = await todoList.findById(req.params.id);
+    if (!todo) {
+      return res.status(statusCodes.NOT_FOUND).json({ msg: "Todo not found" });
     }
-}
+    return res.status(statusCodes.OK).json({ todo });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+  }
+};
 
-const deleteList = async(req,res)=> {
-    try {
-await todoList.findOneAndDelete({_id:req.params.id})
-    }catch(error) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({error : error})
+const editToDo = async (req, res) => {
+  try {
+    const { task } = req.body;
+
+    if (!task) {
+      return res.status(statusCodes.BAD_REQUEST).json({ msg: "Task is required" });
     }
-}
 
-const allList = async(req,res)=> {
-    try {
-   const _lists = await todoList.find()
-
-   return res.status(statusCodes.OK).json({ists : _lists})
-
+    const todo = await todoList.findById(req.params.id);
+    if (!todo) {
+      return res.status(statusCodes.NOT_FOUND).json({ msg: "Todo not found" });
     }
-        catch(error) {
-            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`an error occured`})
-        }
-    
-}
 
+    todo.task = task;
+    await todo.save();
 
-const getOneList = async (req,res)=> {
-    try {
-     const list = await todoList.findOne({_id : req.params.id})
+    return res.status(statusCodes.OK).json({ msg: "Todo updated", todo });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+  }
+};
 
-     if(!list) {
-        return res.status(statusCodes.NOT_FOUND).json({msg:`none found`})
-     }
-
-     return res.status(statusCodes.OK).json({list})
-    }catch(error) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({msg:`an error occured`})
+const deleteList = async (req, res) => {
+  try {
+    const deleted = await todoList.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(statusCodes.NOT_FOUND).json({ msg: "Todo not found" });
     }
-}
+    return res.status(statusCodes.OK).json({ msg: "Todo deleted" });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+  }
+};
 
-module.exports = {createTodo, deleteList,markAndUnMark, getOneList,  editToDo, allList}
+const markAndUnMark = async (req, res) => {
+  try {
+    const todo = await todoList.findById(req.params.id);
+    if (!todo) {
+      return res.status(statusCodes.NOT_FOUND).json({ msg: "Todo not found" });
+    }
+
+    todo.completed = !todo.completed;
+    await todo.save();
+
+    return res.status(statusCodes.OK).json({ msg: "Todo status toggled", todo });
+  } catch (error) {
+    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+  }
+};
+
+module.exports = {
+  createTodo,
+  allList,
+  getOneList,
+  editToDo,
+  deleteList,
+  markAndUnMark
+};
