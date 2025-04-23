@@ -6,13 +6,19 @@ const createTodo = async (req, res) => {
     const { task } = req.body;
 
     if (!task) {
-      return res.status(statusCodes.BAD_REQUEST).json({ msg: "Task is required" });
+      return res
+        .status(statusCodes.BAD_REQUEST)
+        .json({ msg: "Task is required" });
     }
 
     const newTodo = await todoList.create({ task });
-    return res.status(statusCodes.CREATED).json({ msg: "Todo created", todo: newTodo });
+    return res
+      .status(statusCodes.CREATED)
+      .json({ msg: "Todo created", todo: newTodo });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -21,7 +27,9 @@ const allList = async (req, res) => {
     const todos = await todoList.find();
     return res.status(statusCodes.OK).json({ todos });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -33,7 +41,9 @@ const getOneList = async (req, res) => {
     }
     return res.status(statusCodes.OK).json({ todo });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -42,7 +52,9 @@ const editToDo = async (req, res) => {
     const { task } = req.body;
 
     if (!task) {
-      return res.status(statusCodes.BAD_REQUEST).json({ msg: "Task is required" });
+      return res
+        .status(statusCodes.BAD_REQUEST)
+        .json({ msg: "Task is required" });
     }
 
     const todo = await todoList.findById(req.params.id);
@@ -55,7 +67,9 @@ const editToDo = async (req, res) => {
 
     return res.status(statusCodes.OK).json({ msg: "Todo updated", todo });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -67,7 +81,9 @@ const deleteList = async (req, res) => {
     }
     return res.status(statusCodes.OK).json({ msg: "Todo deleted" });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -81,9 +97,13 @@ const markAndUnMark = async (req, res) => {
     todo.completed = !todo.completed;
     await todo.save();
 
-    return res.status(statusCodes.OK).json({ msg: "Todo status toggled", todo });
+    return res
+      .status(statusCodes.OK)
+      .json({ msg: "Todo status toggled", todo });
   } catch (error) {
-    return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ msg: "An error occurred", error });
+    return res
+      .status(statusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: "An error occurred", error });
   }
 };
 
@@ -93,5 +113,5 @@ module.exports = {
   getOneList,
   editToDo,
   deleteList,
-  markAndUnMark
+  markAndUnMark,
 };

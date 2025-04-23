@@ -5,7 +5,7 @@ const {
   getOneList,
   editToDo,
   deleteList,
-  markAndUnMark
+  markAndUnMark,
 } = require("../controllers/todoListCotroller");
 
 const todoRouter = express.Router();

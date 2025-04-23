@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -24,6 +23,12 @@ const App = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!task.trim()) {
+      alert("Please enter a task before submitting.");
+      return;
+    }
+
     try {
       if (editId) {
         await axios.patch(`${baseURL}/${editId}`, { newList: task });
@@ -69,7 +74,6 @@ const App = () => {
           value={task}
           onChange={(e) => setTask(e.target.value)}
           placeholder="Enter task"
-          required
           style={{ padding: 10, width: "80%" }}
         />
         <button type="submit" style={{ padding: 10 }}>
@@ -100,8 +104,8 @@ const App = () => {
               {todo.toDo || todo.task}
             </span>
             <div>
-              <button onClick={() => handleEdit(todo)}></button>
-              <button onClick={() => handleDelete(todo._id)}></button>
+              <button onClick={() => handleEdit(todo)}>Edit</button>
+              <button onClick={() => handleDelete(todo._id)}>Delete</button>
             </div>
           </li>
         ))}
